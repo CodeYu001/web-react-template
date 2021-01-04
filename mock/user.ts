@@ -1,200 +1,64 @@
-import { Request, Response } from 'express';
+import mockApi from './config';
+import { Request, Response } from 'umi';
+import { createAuthCode } from './helpers';
 
-const waitTime = (time: number = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, time);
-  });
-};
+let authCode = '';
+const phoneReg = /^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-7|9])|(?:5[0-3|5-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[1|8|9]))\d{8}$/;
 
-async function getFakeCaptcha(req: Request, res: Response) {
-  await waitTime(2000);
-  return res.json('captcha-xxx');
-}
-
-const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
-
-/**
- * 当前用户的权限，如果为空代表没登录
- * current user access， if is '', user need login
- * 如果是 pro 的预览，默认是有权限的
- */
-let access = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site' ? 'admin' : '';
-
-const getAccess = () => {
-  return access;
-};
-
-// 代码中会兼容本地 service mock 以及部署站点的静态数据
 export default {
-  // 支持值为 Object 和 Array
-  'GET /api/currentUser': (req: Request, res: Response) => {
-    if (!getAccess()) {
-      res.status(401).send({
-        data: {
-          isLogin: false,
-        },
-        errorCode: '401',
-        errorMessage: '请先登录！',
-        success: true,
-      });
-      return;
+  [mockApi('/login/password', 'post')]: (req: Request, res: Response) => {
+    const { username, password } = req.body;
+    if (username === 'admin' && password === '123456') {
+      setTimeout(() => {
+        res.send({ token: '123456', code: 200 });
+      }, 2000);
+    } else {
+      res.send({ msg: '用户名或密码错误', code: 400 });
     }
-    res.send({
-      name: 'Serati Ma',
-      avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
-      userid: '00000001',
-      email: 'antdesign@alipay.com',
-      signature: '海纳百川，有容乃大',
-      title: '交互专家',
-      group: '蚂蚁金服－某某某事业群－某某平台部－某某技术部－UED',
-      tags: [
-        {
-          key: '0',
-          label: '很有想法的',
-        },
-        {
-          key: '1',
-          label: '专注设计',
-        },
-        {
-          key: '2',
-          label: '辣~',
-        },
-        {
-          key: '3',
-          label: '大长腿',
-        },
-        {
-          key: '4',
-          label: '川妹子',
-        },
-        {
-          key: '5',
-          label: '海纳百川',
-        },
-      ],
-      notifyCount: 12,
-      unreadCount: 11,
-      country: 'China',
-      access: getAccess(),
-      geographic: {
-        province: {
-          label: '浙江省',
-          key: '330000',
-        },
-        city: {
-          label: '杭州市',
-          key: '330100',
-        },
-      },
-      address: '西湖区工专路 77 号',
-      phone: '0752-268888888',
-    });
   },
-  // GET POST 可省略
-  'GET /api/users': [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
-    },
-  ],
-  'POST /api/login/account': async (req: Request, res: Response) => {
-    const { password, username, type } = req.body;
-    await waitTime(2000);
-    if (password === 'ant.design' && username === 'admin') {
-      res.send({
-        status: 'ok',
-        type,
-        currentAuthority: 'admin',
-      });
-      access = 'admin';
-      return;
+  [mockApi('/getAuthCode')]: (req: Request, res: Response) => {
+    const phone = req.query.phone as string;
+    if (phoneReg.test(phone)) {
+      authCode = createAuthCode();
+      res.send({ authCode, code: 200 });
+    } else {
+      res.send({ msg: '手机号验证失败，请输入正确的手机号', code: 400 });
     }
-    if (password === 'ant.design' && username === 'user') {
-      res.send({
-        status: 'ok',
-        type,
-        currentAuthority: 'user',
-      });
-      access = 'user';
-      return;
+  },
+  [mockApi('/login/code', 'post')]: (req: Request, res: Response) => {
+    if (!authCode) {
+      res.send({ msg: '请先获取验证码', code: 400 });
     }
-    if (type === 'mobile') {
-      res.send({
-        status: 'ok',
-        type,
-        currentAuthority: 'admin',
-      });
-      access = 'admin';
-      return;
+    const { phone, code } = req.body;
+    if (phoneReg.test(phone) && code.toLowerCase() === authCode.toLowerCase()) {
+      setTimeout(() => {
+        res.send({ token: '123456', code: 200 });
+        authCode = '';
+      }, 2000);
+    } else {
+      res.send({ msg: '验证码错误', code: 400 });
     }
-
-    res.send({
-      status: 'error',
-      type,
-      currentAuthority: 'guest',
-    });
-    access = 'guest';
   },
-  'GET /api/login/outLogin': (req: Request, res: Response) => {
-    access = '';
-    res.send({ data: {}, success: true });
+  [mockApi('/currentUser')]: (req: Request, res: Response) => {
+    const { token } = req.headers;
+    if (token === '123456') {
+      const user = {
+        email: '123456@163.com',
+        phone: '123456789',
+        name: 'admin',
+      };
+      const roles = ['admin'];
+      // const flag = Math.random() * 10 > 3 ? true : false;
+      // setTimeout(() => {
+      //   if (flag) {
+      //     res.send({ user, code: 200 });
+      //   } else {
+      //     res.send({ msg: '用户登陆信息有误，请重新登陆', code: 401 });
+      //   }
+      // }, 1000);
+      res.send({ user, roles, code: 200 });
+    } else {
+      res.send({ msg: '用户登陆信息有误，请重新登陆', code: 401 });
+    }
   },
-  'POST /api/register': (req: Request, res: Response) => {
-    res.send({ status: 'ok', currentAuthority: 'user', success: true });
-  },
-  'GET /api/500': (req: Request, res: Response) => {
-    res.status(500).send({
-      timestamp: 1513932555104,
-      status: 500,
-      error: 'error',
-      message: 'error',
-      path: '/base/category/list',
-    });
-  },
-  'GET /api/404': (req: Request, res: Response) => {
-    res.status(404).send({
-      timestamp: 1513932643431,
-      status: 404,
-      error: 'Not Found',
-      message: 'No message available',
-      path: '/base/category/list/2121212',
-    });
-  },
-  'GET /api/403': (req: Request, res: Response) => {
-    res.status(403).send({
-      timestamp: 1513932555104,
-      status: 403,
-      error: 'Unauthorized',
-      message: 'Unauthorized',
-      path: '/base/category/list',
-    });
-  },
-  'GET /api/401': (req: Request, res: Response) => {
-    res.status(401).send({
-      timestamp: 1513932555104,
-      status: 401,
-      error: 'Unauthorized',
-      message: 'Unauthorized',
-      path: '/base/category/list',
-    });
-  },
-
-  'GET  /api/login/captcha': getFakeCaptcha,
 };

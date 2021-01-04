@@ -1,9 +1,20 @@
 ﻿/**
- * 注意:
- * 1、wrappers: ['@/components/KeepAlive'],必须添加
- * 2、keppAlive 是否缓存当前页面
- * 3、keepAliveName 为国际化请保证以menu开头拼接
- * 4、saveScrollPosition 是否缓存滚动条位置，详情：https://github.com/CJY0208/react-activation/blob/master/README_CN.md
+ * 路由项应该有有效的路径和key：路径：externalPath、redirect、path三者需要有一个（都有优先级依次降低）。key:key、externalPath、path三者需要有一个
+ * 没有有效名称的 菜单、面包屑和 tabs 不会显示
+ * 父级菜单写 path 在点击的时候是没用的。一般来说父级菜单下面会有一个相同path的字级，如果子级在后一个等级路由，可以用 redirect 导向它
+ * path:路由
+ * redirect：重定向路由
+ * routes：子路由
+ * name:菜单与tabs名
+ * icon:菜单栏图标
+ * tabName:tab名称，不屑默认用name
+ * hideChildrenInMenu：是否隐藏子菜单
+ * hideInMenu:隐藏菜单
+ * hideInTabs:隐藏tabs
+ * externalPath：扩展外部的链接
+ * key:唯一标示，一般来说用 path 就可以了，但是如果 path 相同可以自己写key
+ * activeMenu：对应路由菜单栏选中的实际路径
+ * keepAlive:{},对象，用于keepAlive组件的属性配置
  */
 export default [
   {
@@ -16,104 +27,88 @@ export default [
           {
             name: 'login',
             path: '/user/login',
-            component: './User/login',
+            component: './Login',
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    breadcrumbName: '首页',
+    path: '/dashboard',
+    name: 'dashboard',
+    icon: 'GroupOutlined',
+    component: '@/pages/dashboard',
+    wrappers: ['@/wrappers/KeepAliveWrapper', '@/wrappers/PageProgressWrapper'],
+  },
+  {
+    path: '/nest',
+    name: 'nest',
+    icon: 'HeatMapOutlined',
+    component: '@/pages/nest',
+    wrappers: ['@/wrappers/KeepAliveWrapper', '@/wrappers/PageProgressWrapper'],
+    routes: [
+      {
+        path: '/nest',
+        redirect: '/nest/nest-1',
+      },
+      {
+        path: 'nest-1',
+        name: 'nest-1',
+        component: '@/pages/nest/nest-1',
+      },
+      {
+        path: 'nest-2',
+        name: 'nest-2',
+        component: '@/pages/nest/nest-2',
+        routes: [
+          {
+            path: 'nest-2-1',
+            name: 'nest-2-1',
+            component: '@/pages/nest/nest-2/nest-2-1',
+          },
+          {
+            path: 'nest-2-2',
+            name: 'nest-2-2',
+            component: '@/pages/nest/nest-2/nest-2-2',
+          },
+          {
+            hideInMenu: true,
+            path: 'nest-2-3',
+            name: 'nest-2-3',
+            component: '@/pages/nest/nest-2/nest-2-2',
+            activeMenu: '/nest/nest-2/nest-2-1',
+          },
+          {
+            redirect: '/nest/nest-2/nest-2-1',
           },
         ],
       },
     ],
   },
   {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
-    wrappers: ['@/components/KeepAlive'],
-    keppAlive: false,
-    keepAliveName: '欢迎'
-  },
-  {
-    path: '/welcome1',
-    name: 'welcome1',
-    icon: 'smile',
-    component: './Welcome',
-    wrappers: ['@/components/KeepAlive'],
-    keppAlive: true,
-    keepAliveName: '欢迎1'
-  },
-  {
-    path: '/welcome11',
-    name: 'welcome11',
-    icon: 'smile',
-    component: './Welcome',
-    wrappers: ['@/components/KeepAlive'],
-    keppAlive: true,
-    keepAliveName: '欢迎111'
-  },
-  {
-    path: '/welcome2',
-    name: 'welcome2',
-    icon: 'smile',
-    component: './Welcome',
-    wrappers: ['@/components/KeepAlive'],
-    keppAlive: true,
-    keepAliveName: '欢迎12'
-  },
-  {
-    path: '/welcome3',
-    name: 'welcome3',
-    icon: 'smile',
-    component: './Welcome',
-    wrappers: ['@/components/KeepAlive'],
-    keppAlive: true,
-    keepAliveName: '欢迎3'
-  },
-  {
-    path: '/welcome4',
-    name: 'welcome4',
-    icon: 'smile',
-    component: './Welcome',
-    wrappers: ['@/components/KeepAlive'],
-    keppAlive: true,
-    keepAliveName: '欢迎14'
-  },
-  {
-    path: '/welcome5',
-    name: 'welcome5',
-    icon: 'smile',
-    component: './Welcome',
-    wrappers: ['@/components/KeepAlive'],
-    keppAlive: true,
-    keepAliveName: '欢迎15'
-  },
-  {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
+    path: '/component',
+    name: 'Component',
+    icon: 'RadarChartOutlined',
+    component: '@/pages/component',
+    wrappers: ['@/wrappers/PageProgressWrapper'],
     routes: [
       {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        icon: 'smile',
-        component: './Welcome',
-        wrappers: ['@/components/KeepAlive'],
-        keppAlive: true,
-        keepAliveName: '子页面'
+        path: '/component',
+        redirect: '/component/Switch',
+      },
+      {
+        path: 'Switch',
+        name: 'Switch',
+        component: '@/pages/component/Switch',
       },
     ],
   },
-  {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
-    keppAlive: true,
-    wrappers: ['@/components/KeepAlive'],
-    keepAliveName: '列表页'
-  },
+
   {
     path: '/',
-    redirect: '/welcome',
+    redirect: '/dashboard',
   },
   {
     component: './404',

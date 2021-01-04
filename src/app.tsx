@@ -2,12 +2,12 @@ import React from 'react';
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import { notification } from 'antd';
-import { history, RequestConfig, RunTimeLayoutConfig, AliveScope } from 'umi';
+import { history, RequestConfig, RunTimeLayoutConfig } from 'umi';
 import type { ResponseError } from 'umi-request';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import Tabs from '@/components/Tabs'
-import { queryCurrent } from './services/user';
+import TabPane from '@/components/TabPane';
+import { queryCurrent } from './services/global';
 import defaultSettings from '../config/defaultSettings';
 
 /**
@@ -48,8 +48,11 @@ export async function getInitialState(): Promise<{
 
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
-    rightContentRender: () => <RightContent />,
+    siderWidth: 184,
+    navTheme: 'light',
+    contentWidth: 'Fluid',
     disableContentMargin: false,
+    rightContentRender: () => <RightContent />,
     footerRender: () => <Footer />,
     onPageChange: () => {
       const { location } = history;
@@ -61,13 +64,12 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     childrenRender: (children) => {
       const { location } = history;
       return (
-        <AliveScope>
-          { location.pathname !== '/user/login' && <Tabs /> }
-
-          <div style={{ paddingTop: "40px" }} id="contentContainer">
+        <div>
+          { location.pathname !== '/user/login' && <TabPane /> }
+          <div id="contentContainer">
             {children}
           </div>
-        </AliveScope>
+        </div>
       )
     },
     menuHeaderRender: undefined,
