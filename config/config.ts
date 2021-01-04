@@ -13,7 +13,7 @@ export default defineConfig({
     hmr: true,
   },
   layout: {
-    name: 'Ant Design Pro',
+    name: 'Umi Admin',
     locale: false,
     siderWidth: 208,
     ...defaultSettings,
@@ -30,13 +30,6 @@ export default defineConfig({
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
   theme: {
     'primary-color': defaultSettings.primaryColor,
-    'font-size-sm': '12px',
-    'text-color': '#333',
-    'layout-body-background': '#f0f2f5',
-    'layout-header-background': '#001529',
-    'tab-left-menu': '#5E5E5E',
-    'black': '#000',
-    'close-icon-hover': '#ccc',
   },
   esbuild: {},
   title: false,

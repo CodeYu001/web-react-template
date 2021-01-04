@@ -6,24 +6,19 @@ import setting from '../../../config/defaultSettings';
 import useContextMenu from './hooks/useContextMenu';
 import styles from './index.less';
 
-export interface MenuItemProps {
+export type MenuItemProps = {
   click?: (meta: any, e: React.MouseEvent) => void;
   icon?: React.ReactNode;
   name?: string;
   render?: React.ReactNode;
-}
-export interface ContextMenuProps {
+};
+export type ContextMenuProps = {
   meta?: any;
   click?: (meta: any, index: number, e: React.MouseEvent) => void;
   menus?: MenuItemProps[];
-}
+};
 
-const ContextMenu: React.FC<ContextMenuProps> = ({
-  children,
-  menus,
-  click,
-  meta,
-}) => {
+const ContextMenu: React.FC<ContextMenuProps> = ({ children, menus, click, meta }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [state, setState] = useImmer({
     visible: false,
@@ -32,8 +27,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   });
 
   useContextMenu(ref, {
-    click: e => {
-      setState(state => {
+    click: (e) => {
+      setState((state) => {
         state.visible = true;
         if (e.clientX + 140 > window.innerWidth) {
           state.left = e.clientX - 152;
@@ -44,7 +39,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       });
     },
     clickAway: () => {
-      setState(state => {
+      setState((state) => {
         state.visible = false;
       });
     },
@@ -56,7 +51,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       {state.visible &&
         createPortal(
           <div
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             style={{
               position: setting.fixedNavbar ? 'fixed' : 'absolute',
               top: state.top,
@@ -71,10 +66,9 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
                 }
                 return (
                   <div
-                    onClick={e => {
-                      (menu.click && menu.click(meta, e)) ||
-                        (click && click(meta, index, e));
-                      setState(state => {
+                    onClick={(e) => {
+                      (menu.click && menu.click(meta, e)) || (click && click(meta, index, e));
+                      setState((state) => {
                         state.visible = false;
                       });
                     }}

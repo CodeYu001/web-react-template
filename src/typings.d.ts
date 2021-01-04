@@ -38,6 +38,4 @@ declare let ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION: 'site' | undefine
 
 declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
 
-interface AnyObject<T = any> {
-  [prop: string]: T;
-}
+type AnyObject<T = any> = Record<string, T>;

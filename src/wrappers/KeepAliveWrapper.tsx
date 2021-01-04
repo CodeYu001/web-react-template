@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  KeepAlive,
-  IRouteComponentProps,
-  withActivation,
-  withAliveScope,
-  AliveController,
-} from 'umi';
+import type { IRouteComponentProps, AliveController } from 'umi';
+import { KeepAlive, withActivation, withAliveScope } from 'umi';
 
 const initialState = {
   mounted: false,
@@ -20,9 +15,8 @@ class KeepAliveWrapper extends React.Component<Props, State> {
     const { getCachingNodes, route } = this.props;
     const displayPath = route.externalPath || route.redirect || route.path;
     const hasCache = getCachingNodes().find(
-      item =>
-        item.name === (route.keepAlive && route.keepAlive.name) ||
-        item.name === displayPath,
+      (item) =>
+        item.name === (route.keepAlive && route.keepAlive.name) || item.name === displayPath,
     );
 
     if (hasCache) {

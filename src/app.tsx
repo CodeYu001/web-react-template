@@ -1,8 +1,9 @@
 import React from 'react';
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import { notification } from 'antd';
-import { history, RequestConfig, RunTimeLayoutConfig } from 'umi';
+import { message, notification, Affix } from 'antd';
+import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
+import { history } from 'umi';
 import type { ResponseError } from 'umi-request';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
@@ -24,8 +25,11 @@ export async function getInitialState(): Promise<{
 }> {
   const fetchUserInfo = async () => {
     try {
-      const currentUser = await queryCurrent();
-      return currentUser;
+      const res: any = await queryCurrent();
+      if (res.code === 200) {
+        return res.user;
+      }
+      message.error('查询用户信息失败');
     } catch (error) {
       history.push('/user/login');
     }
@@ -48,10 +52,7 @@ export async function getInitialState(): Promise<{
 
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
-    siderWidth: 184,
-    navTheme: 'light',
-    contentWidth: 'Fluid',
-    disableContentMargin: false,
+    disableContentMargin: true,
     rightContentRender: () => <RightContent />,
     footerRender: () => <Footer />,
     onPageChange: () => {
@@ -63,14 +64,25 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     },
     childrenRender: (children) => {
       const { location } = history;
+      const { fixedNavbar } = initialState?.settings as any;
+      if (location.pathname === '/user/login') return children;
       return (
-        <div>
-          { location.pathname !== '/user/login' && <TabPane /> }
-          <div id="contentContainer">
+        <>
+          {fixedNavbar ? (
+            <Affix offsetTop={48}>
+              <TabPane />
+            </Affix>
+          ) : (
+            <TabPane />
+          )}
+          <div
+            id="contentContainer"
+            style={{ margin: 10, padding: 10, borderRadius: 5, backgroundColor: '#fff' }}
+          >
             {children}
           </div>
-        </div>
-      )
+        </>
+      );
     },
     menuHeaderRender: undefined,
     // 自定义 403 页面
@@ -127,7 +139,7 @@ export const request: RequestConfig = {
   requestInterceptors: [
     (url, options) => {
       const tokenHeader = {
-        Authorization: window.localStorage.getItem('token') ?? '',
+        token: window.localStorage.getItem('token') ?? '',
       };
       const newHeaders = options.headers
         ? {
@@ -136,11 +148,8 @@ export const request: RequestConfig = {
           }
         : tokenHeader;
       return {
-        url,
-        options: {
-          ...options,
-          headers: newHeaders,
-        },
+        url: `/api${url}`,
+        options: { ...options, headers: newHeaders },
       };
     },
   ],

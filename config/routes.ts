@@ -1,20 +1,16 @@
 ﻿/**
- * 路由项应该有有效的路径和key：路径：externalPath、redirect、path三者需要有一个（都有优先级依次降低）。key:key、externalPath、path三者需要有一个
- * 没有有效名称的 菜单、面包屑和 tabs 不会显示
- * 父级菜单写 path 在点击的时候是没用的。一般来说父级菜单下面会有一个相同path的字级，如果子级在后一个等级路由，可以用 redirect 导向它
+ * 路由项应该有有效的路径和key：路径：externalPath、redirect、path三者需要有一个（都有优先级依次降低）。
+ *
  * path:路由
  * redirect：重定向路由
  * routes：子路由
- * name:菜单与tabs名
- * icon:菜单栏图标
- * tabName:tab名称，不屑默认用name
+ * name: 菜单与tabs名
+ * icon: 菜单栏图标
  * hideChildrenInMenu：是否隐藏子菜单
- * hideInMenu:隐藏菜单
- * hideInTabs:隐藏tabs
+ * hideInMenu: 隐藏菜单
+ * hideInTabs: 隐藏tabs
  * externalPath：扩展外部的链接
- * key:唯一标示，一般来说用 path 就可以了，但是如果 path 相同可以自己写key
- * activeMenu：对应路由菜单栏选中的实际路径
- * keepAlive:{},对象，用于keepAlive组件的属性配置
+ * keepAlive: 对象，用于keepAlive组件的属性配置
  */
 export default [
   {
@@ -35,19 +31,26 @@ export default [
   },
 
   {
-    breadcrumbName: '首页',
     path: '/dashboard',
     name: 'dashboard',
     icon: 'GroupOutlined',
     component: '@/pages/dashboard',
-    wrappers: ['@/wrappers/KeepAliveWrapper', '@/wrappers/PageProgressWrapper'],
+    wrappers: [
+      '@/wrappers/RouteLayoutWrapper',
+      '@/wrappers/PageProgressWrapper',
+      '@/wrappers/KeepAliveWrapper',
+    ],
   },
   {
     path: '/nest',
     name: 'nest',
     icon: 'HeatMapOutlined',
     component: '@/pages/nest',
-    wrappers: ['@/wrappers/KeepAliveWrapper', '@/wrappers/PageProgressWrapper'],
+    wrappers: [
+      '@/wrappers/RouteLayoutWrapper',
+      '@/wrappers/PageProgressWrapper',
+      '@/wrappers/KeepAliveWrapper',
+    ],
     routes: [
       {
         path: '/nest',
@@ -92,7 +95,7 @@ export default [
     name: 'Component',
     icon: 'RadarChartOutlined',
     component: '@/pages/component',
-    wrappers: ['@/wrappers/PageProgressWrapper'],
+    wrappers: ['@/wrappers/RouteLayoutWrapper', '@/wrappers/PageProgressWrapper'],
     routes: [
       {
         path: '/component',

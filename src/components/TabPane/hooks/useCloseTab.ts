@@ -10,9 +10,10 @@ const useCloseTab = (tabPanes: any[], path: string) => {
 
   const close = useCallback(
     (key: string) => {
-      const currentIndex = tabPanes.findIndex(pane => pane.displayPath === key);
+      const currentIndex = tabPanes.findIndex((pane) => pane.displayPath === key);
       const keeperKey = pathToRegexp(tabPanes[currentIndex].keeperKey);
-      const currentPanes = tabPanes.filter(pane => pane.displayPath !== key);
+      const currentPanes = tabPanes.filter((pane) => pane.displayPath !== key);
+
       if (currentPanes.length === 0) {
         if (isHomePath(key) && isHomePath(path)) {
           return;

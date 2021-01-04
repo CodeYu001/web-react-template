@@ -5,16 +5,16 @@ const Settings: LayoutSettings & {
   logo?: string;
   fixedNavbar?: boolean;
 } = {
-  navTheme: 'light',
+  navTheme: 'dark',
   // 拂晓蓝
   primaryColor: '#1890ff',
   layout: 'mix',
   contentWidth: 'Fluid',
-  fixedHeader: false,
+  fixedHeader: true,
   fixSiderbar: true,
   fixedNavbar: true,
   colorWeak: false,
-  title: 'React Admin',
+  title: 'Umi Admin',
   pwa: false,
   logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
   iconfontUrl: '',

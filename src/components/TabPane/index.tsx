@@ -1,31 +1,22 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo } from 'react';
 import classnames from 'classnames';
-import { useImmer } from 'use-immer';
 import { useHistory, useLocation, useModel } from 'umi';
 import { Tabs, Space } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
-import { TabsProps } from 'antd/es/tabs';
+import type { TabsProps } from 'antd/es/tabs';
 import useCloseTab from './hooks/useCloseTab';
 import TabMenu from './TabMenu';
 import TotalIcons from './TotalIcons';
 import styles from './index.less';
 
-export interface TabPaneProps {
+export type TabPaneProps = {
   path: string;
-}
+};
 
 const TabPane = () => {
   const history = useHistory();
   const { pathname, search } = useLocation();
-  const { tabPanes, tabKey, updateTabPanes } = useModel('global');
-
-  const [state, setState] = useImmer({
-    tabPanes: [] as typeof tabPanes,
-  });
-
-  useEffect(() => {
-    updateTabPanes(state.tabPanes);
-  }, [tabPanes, setState]);
+  const { tabPanes, tabKey } = useModel('global');
 
   const path = pathname + search;
   const close = useCloseTab(tabPanes, path);
@@ -33,7 +24,7 @@ const TabPane = () => {
   const onPaneClose = (key: string) => {
     close(key);
   };
-  const onTabClick: TabsProps['onTabClick'] = key => {
+  const onTabClick: TabsProps['onTabClick'] = (key) => {
     if (tabKey === key) return;
     history.replace(key);
   };
@@ -47,12 +38,12 @@ const TabPane = () => {
         hideAdd
         tabBarStyle={{ margin: 0 }}
       >
-        {tabPanes.map(pane => {
+        {tabPanes.map((pane) => {
           const tabName = pane.tabName || pane.name;
           const closeClassName = classnames(styles.closeIcon, {
             [styles.open]: tabKey === pane.displayPath,
           });
-          const displayPath = pane.displayPath;
+          const { displayPath } = pane;
           return pane.hideInTabs || !tabName ? null : (
             <Tabs.TabPane
               key={displayPath}
@@ -65,11 +56,11 @@ const TabPane = () => {
                 >
                   <Space className={styles.pane}>
                     <div>
-                      {pane.icon && <TotalIcons name={pane.icon} />}
+                      {/* {pane.icon && <TotalIcons name={pane.icon} />} */}
                       <span>{pane.tabName || pane.name}</span>
                     </div>
                     <CloseCircleOutlined
-                      onClick={e => {
+                      onClick={(e) => {
                         e.stopPropagation();
                         onPaneClose(displayPath);
                       }}

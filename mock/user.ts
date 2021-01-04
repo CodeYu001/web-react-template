@@ -25,6 +25,9 @@ export default {
       res.send({ msg: '手机号验证失败，请输入正确的手机号', code: 400 });
     }
   },
+  [mockApi('/login/outLogin')]: (req: Request, res: Response) => {
+    res.send({ data: null, code: 200 });
+  },
   [mockApi('/login/code', 'post')]: (req: Request, res: Response) => {
     if (!authCode) {
       res.send({ msg: '请先获取验证码', code: 400 });
@@ -48,14 +51,6 @@ export default {
         name: 'admin',
       };
       const roles = ['admin'];
-      // const flag = Math.random() * 10 > 3 ? true : false;
-      // setTimeout(() => {
-      //   if (flag) {
-      //     res.send({ user, code: 200 });
-      //   } else {
-      //     res.send({ msg: '用户登陆信息有误，请重新登陆', code: 401 });
-      //   }
-      // }, 1000);
       res.send({ user, roles, code: 200 });
     } else {
       res.send({ msg: '用户登陆信息有误，请重新登陆', code: 401 });

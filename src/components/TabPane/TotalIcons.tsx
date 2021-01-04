@@ -1,10 +1,10 @@
 import React from 'react';
 import * as AllIcons from '@ant-design/icons';
-import { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
+import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
 
-export interface TotalIconsProps extends AntdIconProps {
+export type TotalIconsProps = {
   name: string;
-}
+} & AntdIconProps;
 
 const TotalIcons: React.FC<TotalIconsProps> = ({ className, name, ...rest }) => {
   return name

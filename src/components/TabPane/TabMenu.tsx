@@ -11,26 +11,21 @@ import {
 } from '@ant-design/icons';
 import pathToRegexp from 'path-to-regexp';
 import useCloseTab from './hooks/useCloseTab';
-import ContextMenu, { MenuItemProps } from './ContextMenu';
+import type { MenuItemProps } from './ContextMenu';
+import ContextMenu from './ContextMenu';
 
-export interface TabMenuProps {
+type TabMenuProps = {
   tabPanes: any[];
   pathKey: string;
   keeperKey: string | RegExp;
   path: string;
-}
+};
 
 export function isHomePath(path: string): boolean {
   return !!matchPath(path, { path: '/dashboard', exact: true });
 }
 
-const TabMenu: React.FC<TabMenuProps> = ({
-  tabPanes,
-  pathKey,
-  keeperKey,
-  children,
-  path,
-}) => {
+const TabMenu: React.FC<TabMenuProps> = ({ tabPanes, pathKey, keeperKey, children, path }) => {
   const history = useHistory();
   const { updateTabPanes } = useModel('global');
   const { dropScope, clear, refreshScope } = useAliveController();
@@ -42,7 +37,7 @@ const TabMenu: React.FC<TabMenuProps> = ({
       {
         icon: <RedoOutlined />,
         name: '刷新',
-        click: key => {
+        click: (key) => {
           if (path !== key) {
             dropScope(keeperKey).then(() => {
               history.push(key);
@@ -55,7 +50,7 @@ const TabMenu: React.FC<TabMenuProps> = ({
       {
         icon: <ReloadOutlined />,
         name: '刷新全部',
-        click: key => {
+        click: (key) => {
           if (path !== key) {
             clear().then(() => {
               history.push(key);
@@ -75,7 +70,7 @@ const TabMenu: React.FC<TabMenuProps> = ({
       {
         icon: <CloseOutlined />,
         name: '关闭',
-        click: key => {
+        click: (key) => {
           closeItem(key);
         },
       },
@@ -85,9 +80,7 @@ const TabMenu: React.FC<TabMenuProps> = ({
         click: () => {
           // 如果 key是首页
           if (isHomePath(path)) {
-            const currentPane = tabPanes.find(
-              pane => pane.displayPath === path,
-            );
+            const currentPane = tabPanes.find((pane) => pane.displayPath === path);
             currentPane && updateTabPanes([currentPane]);
             clear();
           } else {
@@ -107,11 +100,9 @@ const TabMenu: React.FC<TabMenuProps> = ({
       {
         icon: <CloseSquareOutlined />,
         name: '关闭其他',
-        click: key => {
-          const currentPanes = tabPanes.filter(
-            pane => pane.displayPath === key,
-          );
-          setTabPanes(currentPanes);
+        click: (key) => {
+          const currentPanes = tabPanes.filter((pane) => pane.displayPath === key);
+          updateTabPanes(currentPanes);
           if (path === key) {
             clear();
           } else {
@@ -128,17 +119,13 @@ const TabMenu: React.FC<TabMenuProps> = ({
       {
         icon: <VerticalRightOutlined />,
         name: '关闭左侧',
-        click: key => {
-          const pathIndex = tabPanes.findIndex(
-            pane => pane.displayPath === path,
-          );
-          const currentIndex = tabPanes.findIndex(
-            pane => pane.displayPath === key,
-          );
+        click: (key) => {
+          const pathIndex = tabPanes.findIndex((pane) => pane.displayPath === path);
+          const currentIndex = tabPanes.findIndex((pane) => pane.displayPath === key);
           const currentPanes = tabPanes.slice(currentIndex);
           const closePanes = tabPanes.slice(0, currentIndex);
-          setTabPanes(currentPanes);
-          closePanes.forEach(pane => {
+          updateTabPanes(currentPanes);
+          closePanes.forEach((pane) => {
             dropScope(pane.keeperKey);
           });
           if (pathIndex < currentIndex) {
@@ -146,10 +133,7 @@ const TabMenu: React.FC<TabMenuProps> = ({
             const unlisten = history.listen(() => {
               unlisten && unlisten();
               setTimeout(() => {
-                dropScope(
-                  closePanes.find(pane => pane.displayPath === path)
-                    ?.keeperKey || path,
-                );
+                dropScope(closePanes.find((pane) => pane.displayPath === path)?.keeperKey || path);
               }, 60);
             });
           }
@@ -158,17 +142,13 @@ const TabMenu: React.FC<TabMenuProps> = ({
       {
         icon: <VerticalLeftOutlined />,
         name: '关闭右侧',
-        click: key => {
-          const pathIndex = tabPanes.findIndex(
-            pane => pane.displayPath === path,
-          );
-          const currentIndex = tabPanes.findIndex(
-            pane => pane.displayPath === key,
-          );
+        click: (key) => {
+          const pathIndex = tabPanes.findIndex((pane) => pane.displayPath === path);
+          const currentIndex = tabPanes.findIndex((pane) => pane.displayPath === key);
           const currentPanes = tabPanes.slice(0, currentIndex + 1);
           const closePanes = tabPanes.slice(currentIndex + 1);
-          setTabPanes(currentPanes);
-          closePanes.forEach(pane => {
+          updateTabPanes(currentPanes);
+          closePanes.forEach((pane) => {
             dropScope(pane.keeperKey);
           });
           if (pathIndex < 0 || pathIndex > currentIndex) {
@@ -176,10 +156,7 @@ const TabMenu: React.FC<TabMenuProps> = ({
             const unlisten = history.listen(() => {
               unlisten && unlisten();
               setTimeout(() => {
-                dropScope(
-                  closePanes.find(pane => pane.displayPath === path)
-                    ?.keeperKey || path,
-                );
+                dropScope(closePanes.find((pane) => pane.displayPath === path)?.keeperKey || path);
               }, 60);
             });
           }
